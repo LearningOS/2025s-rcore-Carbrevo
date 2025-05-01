@@ -54,6 +54,7 @@ lazy_static! {
         let mut tasks = [TaskControlBlock {
             task_cx: TaskContext::zero_init(),
             task_status: TaskStatus::UnInit,
+            syscall_stat: [0; 512],
         }; MAX_APP_NUM];
         for (i, task) in tasks.iter_mut().enumerate() {
             task.task_cx = TaskContext::goto_restore(init_app_cx(i));
@@ -88,6 +89,20 @@ impl TaskManager {
             __switch(&mut _unused as *mut TaskContext, next_task_cx_ptr);
         }
         panic!("unreachable in run_first_task!");
+    }
+
+    ///
+    pub fn inc_syscall_cnt(&self, _id: usize) {
+        let mut inner = self.inner.exclusive_access();
+        let current = inner.current_task;
+        inner.tasks[current].syscall_stat[_id] += 1;
+    }
+
+    ///
+    pub fn get_syscall_cnt(&self, _id: usize) -> usize {
+        let inner = self.inner.exclusive_access();
+        let current = inner.current_task;
+        inner.tasks[current].syscall_stat[_id]
     }
 
     /// Change the status of current `Running` task into `Ready`.
