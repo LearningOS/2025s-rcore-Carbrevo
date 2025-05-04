@@ -29,7 +29,7 @@ pub fn sys_yield() -> isize {
 pub fn sys_get_time(ts: *mut TimeVal, _tz: usize) -> isize {
     trace!("kernel: sys_get_time");
     let us = get_time_us();
-    trace!("kernel: sys_get_time={}",us);
+    debug!("kernel: sys_get_time={}",us);
     unsafe {
         *ts = TimeVal {
             sec: us / 1_000_000,
