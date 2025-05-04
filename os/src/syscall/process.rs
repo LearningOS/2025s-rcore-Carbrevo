@@ -35,7 +35,7 @@ pub fn sys_get_time(ts: *mut TimeVal, _tz: usize) -> isize {
             sec: us / 1_000_000,
             usec: us % 1_000_000,
         };
-        assert(!(ts.sec <= 0 && ts.usec <= 0));
+        assert!(!((*ts).sec <= 0 && (*ts).usec <= 0));
     }
     0
 }
